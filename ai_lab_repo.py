@@ -744,8 +744,12 @@ if __name__ == "__main__":
     if api_key is not None and os.getenv('OPENAI_API_KEY') is None: os.environ["OPENAI_API_KEY"] = args.api_key
     if deepseek_api_key is not None and os.getenv('DEEPSEEK_API_KEY') is None: os.environ["DEEPSEEK_API_KEY"] = args.deepseek_api_key
 
-    if not api_key and not deepseek_api_key: raise ValueError("API key must be provided via --api-key / -deepseek-api-key or the OPENAI_API_KEY / DEEPSEEK_API_KEY environment variable.")
+    def is_local_model(model_str):
+        return str(model_str).startswith("qwen-local:") or str(model_str).startswith("llama-local:")
 
+    if not is_local_model(llm_backend):
+        if not api_key and not deepseek_api_key:
+            raise ValueError("API key must be provided via --api-key / -deepseek-api-key or the OPENAI_API_KEY / DEEPSEEK_API_KEY environment variable.")
     if human_mode or args.research_topic is None: research_topic = input("Please name an experiment idea for AgentLaboratory to perform: ")
     else: research_topic = args.research_topic
 
