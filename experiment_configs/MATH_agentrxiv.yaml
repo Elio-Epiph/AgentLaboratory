@@ -8,9 +8,9 @@ research-topic: "Prompt Engineering on GSM8K to Evaluate Qwen's Arithmetic Probl
 # api-key: "sk-zk2ea9cda550517658186d2f7edd09236c66873c80a55b90"
 # or deepseek-api-key: "DEEPSEEK-API-KEY-HERE"
 # Agent Laboratory backend - using local Qwen model
-llm-backend: "qwen-local:/data/kaohesheng/qiujinbo/Qwen2.5-1.5B-Instruct"
+llm-backend: "qwen-local:/data/kaohesheng/qiujinbo/Qwen2.5-7B-Instruct"
 # Literature review backend - using local Qwen model
-lit-review-backend: "qwen-local:/data/kaohesheng/qiujinbo/Qwen2.5-1.5B-Instruct"
+lit-review-backend: "qwen-local:/data/kaohesheng/qiujinbo/Qwen2.5-7B-Instruct"
 
 # Base language
 language: "English"
@@ -39,7 +39,7 @@ compile-latex: False
 task-notes:
   plan-formulation:
     - 'Design a simple prompting technique to solve arithmetic word problems from the GSM8K dataset.'
-    - 'Use Qwen2.5-1.5B-Instruct as the language model.'
+    - 'Use Qwen2.5-7B-Instruct as the language model.'
     - 'Your goal is not to beat the SOTA but to demonstrate successful execution of the pipeline.'
     - 'Use only 10 randomly selected questions from GSM8K (seed=42).'
     - 'DO NOT spend too long on prompt design - a clear instruction prompt is sufficient.'
