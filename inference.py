@@ -76,6 +76,7 @@ def load_local_model(model_path, device="cpu"):
                 model_path,
                 torch_dtype=torch.float16,
                 device_map="auto",
+		load_in_8bit=True,
                 trust_remote_code=True
             )
         
