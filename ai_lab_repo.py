@@ -795,24 +795,39 @@ if __name__ == "__main__":
                 os.mkdir(lab_dir)
                 os.mkdir(os.path.join(lab_dir, "src"))
                 os.mkdir(os.path.join(lab_dir, "tex"))
-                lab_instance = LaboratoryWorkflow(
-                    parallelized=True,
-                    research_topic=research_topic,
-                    notes=task_notes_LLM,
-                    agent_model_backbone=agent_models,
-                    human_in_loop_flag=human_in_loop,
-                    openai_api_key=api_key,
-                    compile_pdf=compile_pdf,
-                    num_papers_lit_review=num_papers_lit_review,
-                    papersolver_max_steps=papersolver_max_steps,
-                    mlesolver_max_steps=mlesolver_max_steps,
-                    paper_index=_paper_index,
-                    lab_index=parallel_lab_index,
-                    except_if_fail=except_if_fail,
-                    lab_dir=lab_dir,
-                    agentRxiv=True,
-                    agentrxiv_papers=args.agentrxiv_papers
-                )
+
+                checkpoint_path = f"state_saves/Paper{_paper_index}_lab{parallel_lab_index}.pkl"
+                # 判断是否加载 checkpoint
+                if hasattr(args, "load_previous") and args.load_previous and os.path.exists(checkpoint_path):
+                    with open(checkpoint_path, "rb") as f:
+                        lab_instance = pickle.load(f)
+                    print(f"Loaded checkpoint from {checkpoint_path}")
+                    # === 手动同步新 task notes 到所有 agent ===
+                    lab_instance.notes = task_notes_LLM
+                    if hasattr(lab_instance, "phd"): lab_instance.phd.notes = task_notes_LLM
+                    if hasattr(lab_instance, "ml_engineer"): lab_instance.ml_engineer.notes = task_notes_LLM
+                    if hasattr(lab_instance, "postdoc"): lab_instance.postdoc.notes = task_notes_LLM
+                    if hasattr(lab_instance, "professor"): lab_instance.professor.notes = task_notes_LLM
+                    if hasattr(lab_instance, "reviewers"): lab_instance.reviewers.notes = task_notes_LLM
+                else:
+                    lab_instance = LaboratoryWorkflow(
+                        parallelized=True,
+                        research_topic=research_topic,
+                        notes=task_notes_LLM,
+                        agent_model_backbone=agent_models,
+                        human_in_loop_flag=human_in_loop,
+                        openai_api_key=api_key,
+                        compile_pdf=compile_pdf,
+                        num_papers_lit_review=num_papers_lit_review,
+                        papersolver_max_steps=papersolver_max_steps,
+                        mlesolver_max_steps=mlesolver_max_steps,
+                        paper_index=_paper_index,
+                        lab_index=parallel_lab_index,
+                        except_if_fail=except_if_fail,
+                        lab_dir=lab_dir,
+                        agentRxiv=True,
+                        agentrxiv_papers=args.agentrxiv_papers
+                    )
                 lab_instance.perform_research()
                 time_str += str(time.time() - time_now) + " | "
                 with open(f"agent_times_{parallel_lab_index}.txt", "w") as f:
@@ -826,7 +841,7 @@ if __name__ == "__main__":
                 except Exception as e: print(f"Error in lab: {e}")
 
         raise NotImplementedError("Todo: implement parallel labs")
-    else:
+    else: #If not parallel labs
         # remove previous files
         remove_figures()
         if agentRxiv: GLOBAL_AGENTRXIV = AgentRxiv(lab_index)
@@ -842,22 +857,34 @@ if __name__ == "__main__":
             os.mkdir(os.path.join(".", lab_direct))
             os.mkdir(os.path.join(f"./{lab_direct}", "src"))
             os.mkdir(os.path.join(f"./{lab_direct}", "tex"))
-            lab = LaboratoryWorkflow(
-                research_topic=research_topic,
-                notes=task_notes_LLM,
-                agent_model_backbone=agent_models,
-                human_in_loop_flag=human_in_loop,
-                openai_api_key=api_key,
-                compile_pdf=compile_pdf,
-                num_papers_lit_review=num_papers_lit_review,
-                papersolver_max_steps=papersolver_max_steps,
-                mlesolver_max_steps=mlesolver_max_steps,
-                paper_index=_paper_index,
-                except_if_fail=except_if_fail,
-                agentRxiv=False,
-                lab_index=lab_index,
-                lab_dir=f"./{lab_direct}"
-            )
+            checkpoint_path = f"state_saves/Paper{_paper_index}.pkl"
+            if hasattr(args, "load_previous") and args.load_previous and os.path.exists(checkpoint_path):
+                with open(checkpoint_path, "rb") as f:
+                    lab = pickle.load(f)
+                print(f"Loaded checkpoint from {checkpoint_path}")
+                lab.notes = task_notes_LLM
+                if hasattr(lab, "phd"): lab.phd.notes = task_notes_LLM
+                if hasattr(lab, "ml_engineer"): lab.ml_engineer.notes = task_notes_LLM
+                if hasattr(lab, "postdoc"): lab.postdoc.notes = task_notes_LLM
+                if hasattr(lab, "professor"): lab.professor.notes = task_notes_LLM
+                if hasattr(lab, "reviewers"): lab.reviewers.notes = task_notes_LLM
+            else:
+                lab = LaboratoryWorkflow(
+                    research_topic=research_topic,
+                    notes=task_notes_LLM,
+                    agent_model_backbone=agent_models,
+                    human_in_loop_flag=human_in_loop,
+                    openai_api_key=api_key,
+                    compile_pdf=compile_pdf,
+                    num_papers_lit_review=num_papers_lit_review,
+                    papersolver_max_steps=papersolver_max_steps,
+                    mlesolver_max_steps=mlesolver_max_steps,
+                    paper_index=_paper_index,
+                    except_if_fail=except_if_fail,
+                    agentRxiv=False,
+                    lab_index=lab_index,
+                    lab_dir=f"./{lab_direct}"
+                    )
             lab.perform_research()
             time_str += str(time.time() - time_now) + " | "
             with open(f"agent_times_{lab_index}.txt", "w") as f:
