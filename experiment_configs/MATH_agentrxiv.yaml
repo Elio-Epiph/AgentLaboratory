@@ -2,25 +2,23 @@
 copilot-mode: False
 
 # Here is the research prompt. If num-papers-to-write > 1, you can treat this as a "research direction" otherwise it can be *very* specific and can be treated as a full research idea
-research-topic: "Prompt Engineering on GSM8K to Evaluate GPT-4o's Arithmetic Problem-Solving Ability"
+research-topic: "Prompt Engineering on GSM8K to Evaluate Qwen's Arithmetic Problem-Solving Ability"
 
-# Here you can put your OpenAI API key--if you don't have one or OpenAI doesn't work for you, you can also instead use `deepseek-api-key`
-api-key: "sk-zk2ea9cda550517658186d2f7edd09236c66873c80a55b90"
+# Local model configuration (no API key needed)
+# api-key: "sk-zk2ea9cda550517658186d2f7edd09236c66873c80a55b90"
 # or deepseek-api-key: "DEEPSEEK-API-KEY-HERE"
-# Agent Laboratory backend
-llm-backend: "gpt-4o"
-# Literature review backend
-lit-review-backend: "gpt-4o"
+# Agent Laboratory backend - using local Qwen model
+llm-backend: "qwen-local:/data/kaohesheng/qiujinbo/Qwen2.5-1.5B-Instruct"
+# Literature review backend - using local Qwen model
+lit-review-backend: "qwen-local:/data/kaohesheng/qiujinbo/Qwen2.5-1.5B-Instruct"
 
 # Base language
 language: "English"
 
 # Number of arxiv papers to lit review
 num-papers-lit-review: 5
-# Number of agentRxiv papers to lit review
-agentrxiv-papers: 5
 # Total number of papers to write in sequence
-num-papers-to-write: 40
+num-papers-to-write: 1
 # Do you want to run multiple agent labs in parallel?
 parallel-labs: False
 
@@ -41,7 +39,7 @@ compile-latex: False
 task-notes:
   plan-formulation:
     - 'Design a simple prompting technique to solve arithmetic word problems from the GSM8K dataset.'
-    - 'Use gpt-4o as the language model.'
+    - 'Use Qwen2.5-1.5B-Instruct as the language model.'
     - 'Your goal is not to beat the SOTA but to demonstrate successful execution of the pipeline.'
     - 'Use only 10 randomly selected questions from GSM8K (seed=42).'
     - 'DO NOT spend too long on prompt design - a clear instruction prompt is sufficient.'
@@ -49,7 +47,7 @@ task-notes:
     - 'Use the GSM8K dataset from HuggingFace. Sample 10 test examples with seed=42.'
     - 'You may use the following code:\nfrom datasets import load_dataset\nimport random\nrandom.seed(42)\ngsm8k = load_dataset("gsm8k", "main")["test"]\nsample = random.sample(list(gsm8k), 10)'
   running-experiments:
-    - 'Use query_gpt4o(prompt=..., system=...,temperature=...) to get the model response.'
+    - 'Use query_qwen_local(prompt=..., system_prompt=..., model_path=...) to get the Qwen model response'
     - 'Wrap the arithmetic problem in a clear instruction prompt.'
     - 'Use multiprocessing to parallelize 10-question inference.'
     - 'Check if model answer matches ground truth using simple string comparison or normalization.'

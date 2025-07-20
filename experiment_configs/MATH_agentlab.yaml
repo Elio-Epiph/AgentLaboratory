@@ -8,9 +8,9 @@ research-topic: "Prompt Engineering on GSM8K to Evaluate Qwen's Arithmetic Probl
 # api-key: "sk-zk2ea9cda550517658186d2f7edd09236c66873c80a55b90"
 # or deepseek-api-key: "DEEPSEEK-API-KEY-HERE"
 # Agent Laboratory backend - using local Qwen model
-llm-backend: "qwen-local:/data/pretrained_models/Qwen2.5-1.5B-Instruct"
+llm-backend: "qwen-local:/data/kaohesheng/qiujinbo/Qwen2.5-1.5B-Instruct"
 # Literature review backend - using local Qwen model
-lit-review-backend: "qwen-local:/data/pretrained_models/Qwen2.5-1.5B-Instruct"
+lit-review-backend: "qwen-local:/data/kaohesheng/qiujinbo/Qwen2.5-1.5B-Instruct"
 
 # Base language
 language: "English"
@@ -47,7 +47,7 @@ task-notes:
     - 'Use the GSM8K dataset from HuggingFace. Sample 10 test examples with seed=42.'
     - 'You may use the following code:\nfrom datasets import load_dataset\nimport random\nrandom.seed(42)\ngsm8k = load_dataset("gsm8k", "main")["test"]\nsample = random.sample(list(gsm8k), 10)'
   running-experiments:
-    - 'Use query_gpt4o(prompt=..., system=...,temperature=...) to get the model response.'
+    - 'Use query_qwen_local(prompt=..., system_prompt=..., model_path=...) to get the Qwen model response'
     - 'Wrap the arithmetic problem in a clear instruction prompt.'
     - 'Use multiprocessing to parallelize 10-question inference.'
     - 'Check if model answer matches ground truth using simple string comparison or normalization.'
