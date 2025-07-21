@@ -137,9 +137,6 @@ def query_model(model_str, prompt, system_prompt, openai_api_key=None, gemini_ap
                     )
             finally:
                 import gc
-                if outputs is not None:
-                    del outputs
-                del inputs
                 gc.collect()
                 if device == "cuda":
                     torch.cuda.empty_cache()
