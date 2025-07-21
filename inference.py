@@ -133,9 +133,11 @@ def query_model(model_str, prompt, system_prompt, openai_api_key=None, gemini_ap
                     pad_token_id=tokenizer.eos_token_id,
                     eos_token_id=tokenizer.eos_token_id
                 )
-            # 推理后主动清理显存
+        finally:
             import gc
-            del outputs, inputs  
+            if outputs is not None:
+                del outputs
+            del inputs
             gc.collect()
             if device == "cuda":
                 torch.cuda.empty_cache()
