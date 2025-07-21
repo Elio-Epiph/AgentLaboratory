@@ -247,7 +247,8 @@ class BaseAgent:
     def inference(self, research_topic, phase, step, feedback="", temp=None):
         sys_prompt = f"""You are {self.role_description()} \nTask instructions: {self.phase_prompt(phase)}\n{self.command_descriptions(phase)}"""
         context = self.context(phase)
-        history_str = "\n".join([_[1] for _ in self.history])
+        # Keep only the last 5 interactions to prevent the prompt from growing too long.
+        history_str = "\n".join([_[1] for _ in self.history[-5:]])
         phase_notes = [_note for _note in self.notes if phase in _note["phases"]]
         notes_str = f"Notes for the task objective: {phase_notes}\n" if len(phase_notes) > 0 else ""
         complete_str = str()

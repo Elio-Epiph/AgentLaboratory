@@ -7,6 +7,7 @@ import google.generativeai as genai
 # 添加本地模型支持
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
+from transformers import BitsAndBytesConfig
 
 TOKENS_IN = dict()
 TOKENS_OUT = dict()
@@ -72,11 +73,13 @@ def load_local_model(model_path, device="cpu"):
                 trust_remote_code=True
             )
         else:
+            bnb_config = BitsAndBytesConfig(load_in_4bit=True)
+            max_mem = {0: "40GB"}  
             model = AutoModelForCausalLM.from_pretrained(
                 model_path,
-                torch_dtype=torch.float16,
                 device_map="auto",
-		load_in_8bit=True,
+                quantization_config=bnb_config,
+                max_memory=max_mem,
                 trust_remote_code=True
             )
         
@@ -110,7 +113,13 @@ def query_model(model_str, prompt, system_prompt, openai_api_key=None, gemini_ap
                 full_prompt = f"<|im_start|>user\n{prompt}<|im_end|>\n<|im_start|>assistant\n"
             
             # 编码输入
-            inputs = tokenizer(full_prompt, return_tensors="pt")
+            max_length = getattr(tokenizer, "model_max_length", 2048)
+            inputs = tokenizer(
+                full_prompt,
+                return_tensors="pt",
+                truncation=True,
+                max_length=max_length
+            )
             if device == "cuda":
                 inputs = {k: v.to(device) for k, v in inputs.items()}
             
@@ -118,12 +127,18 @@ def query_model(model_str, prompt, system_prompt, openai_api_key=None, gemini_ap
             with torch.no_grad():
                 outputs = model.generate(
                     **inputs,
-                    max_new_tokens=512,
+                    max_new_tokens=256,
                     temperature=temp if temp is not None else 0.7,
                     do_sample=temp is not None and temp > 0,
                     pad_token_id=tokenizer.eos_token_id,
                     eos_token_id=tokenizer.eos_token_id
                 )
+            # 推理后主动清理显存
+            import gc
+            del outputs, inputs  
+            gc.collect()
+            if device == "cuda":
+                torch.cuda.empty_cache()
             
             # 解码输出
             response = tokenizer.decode(outputs[0], skip_special_tokens=True)
