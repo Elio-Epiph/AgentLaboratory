@@ -2,7 +2,7 @@
 copilot-mode: False
 
 # Here is the research prompt. If num-papers-to-write > 1, you can treat this as a "research direction" otherwise it can be *very* specific and can be treated as a full research idea
-research-topic: "Analyze the performance of large language models on sentiment classification tasks using the IMDb or SST-2 datasets."
+research-topic: "Analyze the performance of large language models on sentiment classification tasks using the IMDb datasets."
 
 # Local model configuration (no API key needed)
 # api-key: "sk-zk2ea9cda550517658186d2f7edd09236c66873c80a55b90"
@@ -42,7 +42,10 @@ task-notes:
     - 'Use Qwen2.5-7B-Instruct as the language model.'
     - 'Your goal is not to beat the SOTA but to demonstrate successful execution of the pipeline.'
     - 'Use only 10 randomly selected samples from the IMDb test set (seed=42).'
-    - 'DO NOT spend too long on model design - a workable model is sufficient.'
+    - 'Do not over-optimize the prompt – a single clear and natural instruction in English is sufficient.'
+    - "When performing the literature review, only select papers that are highly relevant to the research topic. For example, if the research topic is 'Analyze the performance of large language models on sentiment classification tasks using the IMDb datasets', you should select papers focusing on sentiment classification tasks using LLMs rather than only examing its robustness or something else. Note that the important thing is to focus on classification tasks."
+    - "For each paper you add, first output a brief explanation (1-2 sentences) of why this paper is directly relevant to the research topic."
+    - "Do not add papers that are only loosely related or focus on other tasks, datasets, or domains."
   data-preparation:
     - 'Use the IMDb dataset from HuggingFace. Sample 10 test examples with seed=42.'
     - 'You may use the following code:\nfrom datasets import load_dataset\nimport random\nrandom.seed(42)\nimdb = load_dataset("imdb")["test"]\nsample = random.sample(list(imdb), 10)'

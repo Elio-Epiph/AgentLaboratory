@@ -130,7 +130,7 @@ def query_model(model_str, prompt, system_prompt, openai_api_key=None, gemini_ap
                     outputs = model.generate(
                         **inputs,
                         max_new_tokens=256,
-                        temperature=temp if temp is not None else 0.7,
+                        temperature=temp if temp is not None else 0.3,
                         do_sample=temp is not None and temp > 0,
                         pad_token_id=tokenizer.eos_token_id,
                         eos_token_id=tokenizer.eos_token_id
