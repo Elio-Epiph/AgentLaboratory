@@ -143,17 +143,19 @@ def query_model(model_str, prompt, system_prompt, openai_api_key=None, gemini_ap
             
             # 解码输出
             response = tokenizer.decode(outputs[0], skip_special_tokens=True)
-            
-            # 提取assistant的回复部分
-            if "<|im_start|>assistant" in response:
+
+            # 优先提取 assistant 部分，否则只保留最后一段非空内容，防止混入 prompt
+            if "<|im_start|>assistant" in response and "<|im_end|>" in response:
                 answer = response.split("<|im_start|>assistant")[-1].split("<|im_end|>")[0].strip()
             else:
-                answer = response.split(full_prompt)[-1].strip()
-            
+                # 只保留最后一段非空内容
+                lines = [line.strip() for line in response.strip().split("\n") if line.strip()]
+                answer = lines[-1] if lines else response.strip()
+
             # 跳过成本计算（本地模型）
             if print_cost:
                 print(f"Local model inference completed (no cost)")
-            
+
             return answer
             
         except Exception as e:
