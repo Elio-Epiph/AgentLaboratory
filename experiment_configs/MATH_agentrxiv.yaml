@@ -2,7 +2,7 @@
 copilot-mode: False
 
 # Here is the research prompt. If num-papers-to-write > 1, you can treat this as a "research direction" otherwise it can be *very* specific and can be treated as a full research idea
-research-topic: "Prompt Engineering on GSM8K to Evaluate Qwen's Arithmetic Problem-Solving Ability"
+research-topic: "Design and evaluate prompt engineering techniques to improve the arithmetic problem-solving accuracy of large language models on the GSM8K benchmark."
 
 # Local model configuration (no API key needed)
 # api-key: "sk-zk2ea9cda550517658186d2f7edd09236c66873c80a55b90"
