@@ -38,23 +38,24 @@ compile-latex: False
 # Task notes
 task-notes:
   plan-formulation:
-    - 'Design a simple prompting technique to solve arithmetic word problems from the GSM8K dataset.'
+    - 'Design a simple prompting technique to perform sentiment classification on movie reviews.'
     - 'Use Qwen2.5-7B-Instruct as the language model.'
     - 'Your goal is not to beat the SOTA but to demonstrate successful execution of the pipeline.'
-    - 'Use only 10 randomly selected questions from GSM8K (seed=42).'
+    - 'Use only 10 randomly selected samples from the IMDb test set (seed=42).'
     - 'DO NOT spend too long on prompt design - a clear instruction prompt is sufficient.'
   data-preparation:
-    - 'Use the GSM8K dataset from HuggingFace. Sample 10 test examples with seed=42.'
-    - 'You may use the following code:\nfrom datasets import load_dataset\nimport random\nrandom.seed(42)\ngsm8k = load_dataset("gsm8k", "main")["test"]\nsample = random.sample(list(gsm8k), 10)'
+    - 'Use the IMDb dataset from HuggingFace. Sample 10 test examples with seed=42.'
+    - 'You may use the following code:\nfrom datasets import load_dataset\nimport random\nrandom.seed(42)\nimdb = load_dataset("imdb")["test"]\nsample = random.sample(list(imdb), 10)'
+    - 'Truncate long reviews to a maximum of 512 characters for efficiency.'
   running-experiments:
-    - 'Use query_qwen_local(prompt=..., system_prompt=..., model_path=...) to get the Qwen model response'
-    - 'Wrap the arithmetic problem in a clear instruction prompt.'
-    - 'Use multiprocessing to parallelize 10-question inference.'
-    - 'Check if model answer matches ground truth using simple string comparison or normalization.'
+    - 'Use query_qwen_local(prompt=..., system_prompt=..., model_path=...) to get the Qwen model response.'
+    - 'Wrap each review in a prompt asking the model to classify its sentiment as positive or negative.'
+    - 'Use multiprocessing to parallelize 10-sample inference.'
+    - 'Compare model predictions to ground truth labels using simple string or label matching.'
   results-interpretation:
-    - 'Report how many questions were correct out of 10.'
-    - 'Optionally print each problem + model answer + correct answer.'
+    - 'Report how many predictions were correct out of 10.'
+    - 'Optionally print each review + model prediction + ground truth label.'
   report-writing:
-    - 'Summarize the experiment and include the final accuracy.'
-    - 'Explain briefly the prompting strategy.'
+    - 'Summarize the experiment and include the final classification accuracy.'
+    - 'Explain briefly the prompting strategy used for sentiment classification.'
     - 'You may include a simple bar chart or table to present results.'
