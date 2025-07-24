@@ -247,8 +247,7 @@ class BaseAgent:
     def inference(self, research_topic, phase, step, feedback="", temp=None):
         sys_prompt = f"""You are {self.role_description()} \nTask instructions: {self.phase_prompt(phase)}\n{self.command_descriptions(phase)}"""
         context = self.context(phase)
-        # Keep only the last 5 interactions to prevent the prompt from growing too long.
-        history_str = "\n".join([_[1] for _ in self.history[-5:]])
+        history_str = "\n".join([_[1] for _ in self.history])
         phase_notes = [_note for _note in self.notes if phase in _note["phases"]]
         notes_str = f"Notes for the task objective: {phase_notes}\n" if len(phase_notes) > 0 else ""
         complete_str = str()
@@ -484,7 +483,7 @@ class MLEngineerAgent(BaseAgent):
             return (
                 "You can produce code using the following command: ```python\ncode here\n```\n where code here is the actual code you will execute in a Python terminal, and python is just the word python. Try to incorporate some print functions. Do not use any classes or functions. If your code returns any errors, they will be provided to you, and you are also able to see print statements. You will receive all print statement results from the code. Make sure function variables are created inside the function or passed as a function parameter.\n"  # Try to avoid creating functions. 
                 "You can produce dialogue using the following command: ```DIALOGUE\ndialogue here\n```\n where dialogue here is the actual dialogue you will send, and DIALOGUE is just the word DIALOGUE.\n"
-                "You also have access to HuggingFace datasets. You can search the datasets repository using the following command: ```SEARCH_HF\nsearch query here\n``` where search query here is the query used to search HuggingFace datasets, and SEARCH_HF is the word SEARCH_HF. This will return a list of HuggingFace dataset descriptions which can be loaded into Python using the datasets library. Your code MUST use an external HuggingFace directory.\n"
+                "You also have access to HuggingFace datasets. You can search the datasets repository using the following command: ```SEARCH_HF\nsearch query here\n``` where search query here is the query used to search HuggingFace datasets, and SEARCH_HF is the word SEARCH_HF. This will return a list of HuggingFace dataset descriptions which can be loaded into Python using the datasets library. Your code MUST use an external HuggingFace directory.  IMPORTANT: Always use the actual dataset or research topic as the search query. Do NOT use the placeholder 'search query here'.\n"
                 "You MUST use a HuggingFace dataset in your code. DO NOT CREATE A MAIN FUNCTION. Try to make the code very simple.\n"
                 "You can only use a SINGLE command per inference turn. Do not use more than one command per inference. If you use multiple commands, then only one of them will be executed, NOT BOTH.\n"
                 "When performing a command, make sure to include the three ticks (```) at the top and bottom ```COMMAND\ntext\n``` where COMMAND is the specific command you want to run (e.g. python, DIALOGUE, SEARCH_HF).\n")
@@ -638,7 +637,8 @@ class PhDStudentAgent(BaseAgent):
             raise Exception(f"Invalid phase: {phase}")
         if phase == "literature review":
             return (
-                "To collect paper summaries, use the following command: ```SUMMARY\nSEARCH QUERY\n```\n where SEARCH QUERY is a string that will be used to find papers with semantically similar content and SUMMARY is just the word SUMMARY. Make sure your search queries are very short.\n"
+                "To collect paper summaries, use the following command: ```SUMMARY\nSEARCH QUERY\n```\n where SEARCH QUERY here is the actual search query you want to use (for example, the current research topic) and it will be used to find papers with semantically similar content and SUMMARY is just the word SUMMARY. Make sure your search queries are very short.\n"
+                "IMPORTANT: Always use the actual research topic as the search query. Do NOT use the placeholder 'search query here' or 'SEARCH QUERY'.\n"
                 "To get the full paper text for an arXiv paper, use the following command: ```FULL_TEXT\narXiv paper ID\n```\n where arXiv paper ID is the ID of the arXiv paper (which can be found by using the SUMMARY command), and FULL_TEXT is just the word FULL_TEXT. Make sure to read the full text using the FULL_TEXT command before adding it to your list of relevant papers.\n"
                 "If you believe a paper is relevant to the research project proposal, you can add it to the official review after reading using the following command: ```ADD_PAPER\narXiv_paper_ID\nPAPER_SUMMARY\n```\nwhere arXiv_paper_ID is the ID of the arXiv paper, PAPER_SUMMARY is a brief summary of the paper, and ADD_PAPER is just the word ADD_PAPER. You can only add one paper at a time. \n"
                 "Make sure to use ADD_PAPER when you see a relevant paper. DO NOT use SUMMARY too many times."
